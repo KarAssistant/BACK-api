@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  karassistant-back:
+    #build: .
+    image: codyisthesenate/karassistant-api:0.0.1
+    restart: always
+    container_name: karassistant-back-${ENV_NAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .env:/home/node/Karassistant/.env
+      - kara-data:/home/node/Karassistant/data
+      - kara-logs-api:/home/node/Karassistant/logs
+      - kara-versions:/home/node/Karassistant/versions
+    ports:
+      - ${PORT_BACK}:3000
+    networks:
+      - karassistant
+
+networks:
+  karassistant:
+
+volumes:
+  kara-data:
+  kara-logs-api:
+  kara-versions:

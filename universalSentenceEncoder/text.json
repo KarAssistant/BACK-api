@@ -1,0 +1,9 @@
+{
+  "en": {
+    "dontUnderstand": "I don't understand what you mean"
+  },
+  "fr": {
+    "dontUnderstand": "Je n'ai pas compris ce que vous voulez dire"
+  },
+  "error": "Undefined language for universalSentenceEncoder/query"
+}
