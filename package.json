@@ -28,6 +28,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-header": "^1.1.1",
+    "node-cron": "^3.0.3",
     "node-forge": "^1.3.1",
     "node-rsa": "^1.1.1",
     "swagger-jsdoc": "^6.2.8",
