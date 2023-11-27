@@ -17,6 +17,6 @@ async function runLinuxCommand(command) {
 
 module.exports.loadSkills = loadSkills;
 async function loadSkills() {
-    await runLinuxCommand(`docker run -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_skills/dataSkills codyisthesenate/karassistant-back-skills:${ servicesVersions.skills ? servicesVersions.skills: "latest"} loadSkills`);
-    await runLinuxCommand(`docker run -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_sentenseEncoder/skills -v ${process.env.ENV_NAME}_kara-data-vectors:/home/node/Karassistant_sentenseEncoder/data/vectors codyisthesenate/karassistant-back-sentense-encoder:${ servicesVersions.vectors ? servicesVersions.vectors: "latest"}`);
+    await runLinuxCommand(`docker run --rm -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_skills/dataSkills codyisthesenate/karassistant-back-skills:${ servicesVersions.skills ? servicesVersions.skills: "latest"} loadSkills`);
+    await runLinuxCommand(`docker run --rm -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_sentenseEncoder/skills -v ${process.env.ENV_NAME}_kara-data-vectors:/home/node/Karassistant_sentenseEncoder/data/vectors codyisthesenate/karassistant-back-sentense-encoder:${ servicesVersions.sentenseEncoder ? servicesVersions.sentenseEncoder: "latest"}`);
 }
