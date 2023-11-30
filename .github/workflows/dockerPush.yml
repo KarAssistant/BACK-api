@@ -62,12 +62,14 @@ jobs:
         run: echo "Build image ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$version"
 
       - name: Build and push (tagged version)
+        env:
+          version: ${{ needs.Check.outputs.version }}
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ needs.Check.outputs.version }}"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$version"
           build-args: project_path=back_node
 
       - name: Build and push (latest version)
@@ -85,5 +87,7 @@ jobs:
           tag: "${{ needs.Check.outputs.version }}"
 
       - name: Create summury
+        env:
+          version: ${{ needs.Check.outputs.version }}
         run: |
-          echo "image build 'karassistant-back:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY
+          echo "image build '$IMAGE_NAME:$version' succeed" >> $GITHUB_STEP_SUMMARY
