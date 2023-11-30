@@ -1,0 +1,89 @@
+name: "Docker push"
+run-name: "DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
+on:
+  push:
+env:
+  IMAGE_NAME: karassistant-back-api
+
+jobs:
+  Check:
+    runs-on: ubuntu-latest
+    outputs:
+      RUN_BUILD: ${{ steps.define_docker_data.outputs.run_build }}
+      VERSION: ${{ steps.define_docker_data.outputs.version }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Check if version already exist
+        id: define_docker_data
+        run: |
+          json_content=$(cat package.json)
+          version=$(echo "$json_content" | jq -r '.version')
+          echo "Target version : $version"
+          if [[ $(docker manifest inspect ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$version 2> /dev/null) != "" ]]; then
+            echo -e "\e[31mVersion $version already exist"
+            echo "Version $version already exist" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Build image version $version" >> $GITHUB_STEP_SUMMARY
+            echo -e "\e[32mBuild image version $version"
+            echo "run_build=yes" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          fi
+
+  Build_Push:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs:
+      - Check
+    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Echo version
+        env:
+          version: ${{ needs.Check.outputs.version }}
+        run: echo "Build image ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$version"
+
+      - name: Build and push (tagged version)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ needs.Check.outputs.version }}"
+          build-args: project_path=back_node
+
+      - name: Build and push (latest version)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:latest"
+          build-args: project_path=back_node
+
+      - name: Create tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "${{ needs.Check.outputs.version }}"
+
+      - name: Create summury
+        run: |
+          echo "image build 'karassistant-back:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY
