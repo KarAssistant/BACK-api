@@ -69,7 +69,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$version"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.version }}"
           build-args: project_path=back_node
 
       - name: Build and push (latest version)
@@ -78,7 +78,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: "${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:latest"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
           build-args: project_path=back_node
 
       - name: Create tag
