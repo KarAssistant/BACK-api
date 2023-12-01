@@ -18,7 +18,7 @@ async function runLinuxCommand(command) {
 module.exports.loadSkills = loadSkills;
 async function loadSkills() {
     try {
-        await runLinuxCommand(`docker run --rm -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_skills/dataSkills codyisthesenate/karassistant-back-skills:${servicesVersions.skills ? servicesVersions.skills: "latest"} loadSkills`);
+        await runLinuxCommand(`docker run --rm -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_skills/data/skills codyisthesenate/karassistant-back-skills:${servicesVersions.skills ? servicesVersions.skills: "latest"} loadSkills`);
         await runLinuxCommand(`docker run --rm -v ${process.env.ENV_NAME}_kara-data-skills:/home/node/Karassistant_sentenseEncoder/skills -v ${process.env.ENV_NAME}_kara-data-vectors:/home/node/Karassistant_sentenseEncoder/data/vectors codyisthesenate/karassistant-back-sentense-encoder:${ servicesVersions.sentenseEncoder ? servicesVersions.sentenseEncoder: "latest"}`);          
     } catch {
         console.log('\x1b[33mDocker not supported\x1b[0m');
